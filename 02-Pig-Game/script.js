@@ -5,6 +5,10 @@ const dice = document.querySelector(".dice");
 const btnRoll = document.querySelector(".btn--roll");
 const btnHold = document.querySelector(".btn--hold");
 const btnNew = document.querySelector(".btn--new");
+let currentScore = 0;
+let totalScore = 0;
+let playerActive = 0;
+let winner = false;
 
 //-------------Hide the dice--------------------------------//
 const hideDice = function () {
@@ -32,56 +36,26 @@ const updateActivePlayer = function (playerActive) {
     .classList.add("player--active");
   return playerActive;
 };
-//------------------Starting  Conditions -----------------//
-// change the scores to zero
-let currentScore = 0;
-let totalScore = 0;
-let playerActive = 0;
-score0El.textContent = 0;
-score1El.textContent = 0;
-//Now hiding the dice
-hideDice();
-//----------------Start Rolling-------------------------//
-btnRoll.addEventListener("click", function () {
-  // Generate a random number
-  const randomNumber = Math.trunc(Math.random() * 6) + 1;
-  // Fetch the image according to the number
-  const imgSrc = `./dice-${randomNumber}.png`;
-  //set the image
-  dice.setAttribute("src", imgSrc);
-  //make it visible if not
-  if (dice.classList.contains("hidden")) dice.classList.remove("hidden");
-  //check for the condition
-  if (randomNumber !== 1) {
-    //Add it to the score
-    currentScore += randomNumber;
-    updateCurrentScore(currentScore, playerActive);
-  } else {
-    //set the score to zero
-    currentScore = 0;
-    updateCurrentScore(currentScore, playerActive);
-    playerActive = updateActivePlayer(playerActive);
-  }
-});
-
-//------------------Hold Button---------------------------//
-btnHold.addEventListener("click", function () {
-  //calculate the final score
-  totalScore = Number(
-    document.querySelector(`#score--${playerActive}`).textContent
-  );
-  totalScore += currentScore;
-  //Update the final score
-  updateFinalScore(totalScore, playerActive);
-  //reset the current score
+//------------------Switch Player-------------------------//
+const switchPlayer = function () {
+  //set the score to zero
   currentScore = 0;
   updateCurrentScore(currentScore, playerActive);
-  //switch the player
   playerActive = updateActivePlayer(playerActive);
-});
-
-//-----------------new game---------------------------------//
-btnNew.addEventListener("click", function () {
+};
+//------------------Reset the game------------------------//
+const resetGame = function () {
+  //set the winner to false if it was announced and reset the text
+  if (winner === true) {
+    document.querySelector(
+      `#name--${playerActive}`
+    ).textContent = `Player ${playerActive}`;
+    winner = false;
+    //remove winner class
+    document
+      .querySelector(`.player--${playerActive}`)
+      .classList.remove("player--winner");
+  }
   //reset the current score
   currentScore = 0;
   updateCurrentScore(currentScore, playerActive);
@@ -94,4 +68,58 @@ btnNew.addEventListener("click", function () {
   playerActive = updateActivePlayer(playerActive);
   //hide the dice
   hideDice();
+};
+//------------------Starting  Conditions -----------------//
+resetGame();
+//----------------Start Rolling-------------------------//
+btnRoll.addEventListener("click", function () {
+  if (!winner) {
+    // Generate a random number
+    const randomNumber = Math.trunc(Math.random() * 6) + 1;
+    // Fetch the image according to the number
+    const imgSrc = `./dice-${randomNumber}.png`;
+    //set the image
+    dice.setAttribute("src", imgSrc);
+    //make it visible if not
+    if (dice.classList.contains("hidden")) dice.classList.remove("hidden");
+    //check for the condition
+    if (randomNumber !== 1) {
+      //Add it to the score
+      currentScore += randomNumber;
+      updateCurrentScore(currentScore, playerActive);
+    } else {
+      switchPlayer();
+    }
+  }
 });
+
+//------------------Hold Button---------------------------//
+btnHold.addEventListener("click", function () {
+  //calculate the final score
+  totalScore = Number(
+    document.querySelector(`#score--${playerActive}`).textContent
+  );
+  totalScore += currentScore;
+  if (totalScore >= 100) {
+    //announce the winner
+    document.querySelector(`#name--${playerActive}`).textContent = `Winner! 🎉`;
+    //add the winner class
+    document
+      .querySelector(`.player--${playerActive}`)
+      .classList.add("player--winner");
+    winner = true;
+    //update the final score as well
+    updateFinalScore(totalScore, playerActive);
+    currentScore = 0;
+    updateCurrentScore(currentScore, playerActive);
+    //hide the dice
+    hideDice();
+  } else {
+    //Update the final score
+    updateFinalScore(totalScore, playerActive);
+    switchPlayer();
+  }
+});
+
+//-----------------new game---------------------------------//
+btnNew.addEventListener("click", resetGame);
