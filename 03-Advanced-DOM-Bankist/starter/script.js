@@ -102,6 +102,40 @@ document.querySelector('.nav__links').addEventListener('click', function (e) {
 //     document.querySelector(id).scrollIntoView({ behavior: 'smooth' });
 //   });
 // });
+
+//-------------------TABBED COMPONENTS ----------//
+const tabs = document.querySelectorAll('.operations__tab');
+const tabsContainer = document.querySelector('.operations__tab-container');
+const tabsContent = document.querySelectorAll('.operations__content');
+
+//---adding event handler function using event delegation
+
+tabsContainer.addEventListener('click', function (e) {
+  //does not work if button has an inside element and you click on it
+  //in this case :span
+  // if (e.target.classList.contains('operations__tab')) {
+  //   console.log('yes');
+  // }
+
+  //so using the closest() function
+  const clicked = e.target.closest('.operations__tab');
+  if (!clicked) return;
+
+  //hiding previously active tab and tabContent
+  tabs.forEach(tab => tab.classList.remove('operations__tab--active'));
+  tabsContent.forEach(tabContent =>
+    tabContent.classList.remove('operations__content--active')
+  );
+
+  //adding the tabbed class
+  clicked.classList.add('operations__tab--active');
+
+  //adding the relevant content
+  document
+    .querySelector(`.operations__content--${clicked.dataset.tab}`)
+    .classList.add('operations__content--active');
+});
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // //HOW TO SELECT, CREATE AND DELETE ELEMENTS
