@@ -5,7 +5,12 @@ const btnCloseModal = document.querySelector('.btn--close-modal');
 const btnsOpenModal = document.querySelectorAll('.btn--show-modal');
 const btnScrollTo = document.querySelector('.btn--scroll-to');
 const section1 = document.querySelector('#section--1');
-
+const tabs = document.querySelectorAll('.operations__tab');
+const tabsContainer = document.querySelector('.operations__tab-container');
+const tabsContent = document.querySelectorAll('.operations__content');
+const nav = document.querySelector('.nav');
+const header = document.querySelector('header');
+const dotContainer = document.querySelector('.dots');
 ///////////////////////////////////////
 // Modal window
 
@@ -104,10 +109,6 @@ document.querySelector('.nav__links').addEventListener('click', function (e) {
 // });
 
 //-------------------TABBED COMPONENTS ----------//
-const tabs = document.querySelectorAll('.operations__tab');
-const tabsContainer = document.querySelector('.operations__tab-container');
-const tabsContent = document.querySelectorAll('.operations__content');
-
 //---adding event handler function using event delegation
 
 tabsContainer.addEventListener('click', function (e) {
@@ -136,6 +137,212 @@ tabsContainer.addEventListener('click', function (e) {
     .classList.add('operations__content--active');
 });
 
+//-----------------Fade Out Effect on Button Hover -------------------//
+
+//mouse enter event does not have bubbling phase
+//we have mouseover instead which is the same as mouse enter
+const navHandler = function (e) {
+  const opacity = this;
+  if (e.target.classList.contains('nav__link')) {
+    const siblings = e.target.closest('.nav').querySelectorAll('.nav__link');
+    const logo = e.target.closest('.nav').querySelector('.nav__logo');
+    siblings.forEach(function (el) {
+      if (el !== e.target) {
+        el.style.opacity = opacity;
+      }
+    });
+    logo.style.opacity = this;
+  }
+};
+nav.addEventListener('mouseover', navHandler.bind(0.5));
+nav.addEventListener('mouseout', navHandler.bind(1));
+
+// Fixing the navbar after a certain position
+
+//-----METHOD ONE-------//
+//SCROLL EVENT IS NOT RECOMMENDED //
+
+// const initialPos = section1.getBoundingClientRect().top;
+
+// // Stick Navbar
+// const stickNav = function () {
+//   if (window.scrollY > initialPos) nav.classList.add('sticky');
+//   else nav.classList.remove('sticky');
+// };
+// stickNav();
+// window.addEventListener('scroll', stickNav);
+
+//------------METHOD TWO----//
+//--THE INTERSECTION OBSERVER API //
+/*
+ALLOWS OUR CODE TO OBSERVE CHANGES TO THE WAY THAT A CERTAIN TARGET ELEMENT INTERSECTS ANOTHER ELEMENT OR THE WAY IT INTERSECTS THE VIEWPORT
+
+CALLBACK FUNCTION WILL GET CALLED EACH TIME THAT THE OBSERVED ELEMENT, IS INTERSECTING THE ROOT ELEMENT AT THE THRESHOLD WE DEFINED NO MATTER WE ARE SCROLLING UP/DOWN
+
+---SYNTAX ---
+CONST OBSERVER = NEW INTERSECTION OBJECT(CALLBACK,OPTIONS)
+CALLBACK(ENTRIES,OBSERVER)
+OPTIONS(ROOT,THRESHOLD) WE CAN HAVE MULTIPLE THRESHOLDS
+*/
+const scrollCallBack = function (entries, observer) {
+  entries.forEach(entry => {
+    //if no common region in viewport
+    if (!entry.isIntersecting) {
+      nav.classList.add('sticky');
+      //if there is a common region
+    } else nav.classList.remove('sticky');
+  });
+};
+const options = {
+  //we want to observe target element with the viewport
+  root: null,
+  //we want to use callback when 0% of target is visible
+  threshold: 0,
+  //add a margin to threshold -- -90px before zero threshold
+  rootMargin: `-${nav.getBoundingClientRect().height}px`,
+};
+const observer = new IntersectionObserver(scrollCallBack, options);
+observer.observe(header);
+
+//----REVEAL SECTIONS --------------//
+
+const makeSectionVisible = function (entries, observer) {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    entry.target.classList.remove('section--hidden');
+    observer.unobserve(entry.target);
+  });
+};
+const revealOptions = {
+  //we want to observe target element with the viewport
+  root: null,
+  //we want to use callback when 15% of target is visible
+  threshold: 0.15,
+};
+const sections = document.querySelectorAll('section');
+const sectionObserver = new IntersectionObserver(
+  makeSectionVisible,
+  revealOptions
+);
+sections.forEach(section => {
+  sectionObserver.observe(section);
+  section.classList.add('section--hidden');
+});
+
+//----------LAZY LOADING OF THE IMAGES ----------//
+// This selects all image elements which have a data-src attribute. This is a CUSTOM data attribute
+const imgTargets = document.querySelectorAll('img[data-src]');
+const imageOptions = {
+  root: null,
+  threshold: 0,
+  // We need to load this image BEFORE we actually reach it, so we don't create a visible lag. To achieve this, we add a 200px margin to the bottom, virtually "extending the viewport 200px down", so that it is intersected earlier. [Check if it works on network tab]
+  // We want EXACTLY 200px, not some percentage, that's why we use the margin here, and NOT the threshold
+  rootMargin: '0px 0px -200px 0px',
+};
+const revealImages = function (entries, observer) {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.src = entry.target.dataset.src;
+      entry.target.addEventListener('load', function () {
+        this.classList.remove('lazy-img');
+      });
+      // entry.target.onload = function() {
+      // };
+      // Creating an "empty" image:
+      // document.createElement('img')
+
+      // V1, without placeholder images
+      // entry.target.src = entry.target.dataset.src;
+      observer.unobserve(entry.target);
+    }
+  });
+};
+const imageObserver = new IntersectionObserver(revealImages, imageOptions);
+imgTargets.forEach(image => {
+  imageObserver.observe(image);
+});
+
+//----------IMPLEMENTING THE SLIDER -------//
+const Slider = function () {
+  const slides = document.querySelectorAll('.slide');
+  let currSlide = 0;
+  const btnLeft = document.querySelector('.slider__btn--left');
+  const btnRight = document.querySelector('.slider__btn--right');
+  // const slider = document.querySelector('.slider');
+  // slider.style.transform = 'scale(0.4) translateX(-800px)';
+  // slider.style.overflow = 'visible';
+
+  const activeSlide = function (pos) {
+    const dots = dotContainer.querySelectorAll('.dots__dot');
+    dots.forEach(dot => {
+      dot.classList.remove('dots__dot--active');
+      if (dot.dataset.slide == pos) {
+        dot.classList.add('dots__dot--active');
+      }
+    });
+  };
+  const goToSlide = function (slide) {
+    slides.forEach(
+      (s, i) =>
+        (s.style.transform = `translateX(${
+          ((i - slide) % slides.length) * 100
+        }%)`)
+    );
+  };
+  const createDots = function () {
+    slides.forEach((_, i) =>
+      dotContainer.insertAdjacentHTML(
+        'beforeend',
+        `<button class="dots__dot" data-slide="${i}"></button>`
+      )
+    );
+  };
+
+  const nextSlide = function () {
+    if (currSlide === slides.length - 1) {
+      currSlide = 0;
+    } else {
+      currSlide++;
+    }
+    goToSlide(currSlide);
+    activeSlide(currSlide);
+    console.log(currSlide);
+  };
+  const prevSlide = function () {
+    if (currSlide === 0) {
+      currSlide = slides.length - 1;
+    } else {
+      currSlide--;
+    }
+    goToSlide(currSlide);
+    activeSlide(currSlide);
+  };
+  const init = function () {
+    createDots();
+    activeSlide(currSlide);
+    goToSlide(currSlide);
+  };
+
+  //Init
+  init();
+
+  //event handler
+  btnRight.addEventListener('click', nextSlide);
+  btnLeft.addEventListener('click', prevSlide);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft') prevSlide();
+    e.key === 'ArrowRight' && nextSlide();
+  });
+  dotContainer.addEventListener('click', function (e) {
+    if (e.target.classList.contains('dots__dot')) {
+      const { slide } = e.target.dataset;
+      console.log(slide);
+      goToSlide(slide);
+      activeSlide(slide);
+    }
+  });
+};
+Slider();
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // //HOW TO SELECT, CREATE AND DELETE ELEMENTS
