@@ -608,3 +608,32 @@ Slider();
 // [...header1.parentElement.children].forEach(function (el) {
 //   if (el !== header1) el.style.transform = 'scale(0.5)';
 // });
+
+// //-------SOME EVENT HANDLERS--------------//
+
+// // 1--- DOMContentLoaded---------//
+// //triggered when HTML is fully parsed and dom tree is created
+// //script and html has been downloaded
+
+// document,
+//   addEventListener('DOMContentLoaded', function (e) {
+//     console.log(`HTML parsed and DOM tree built`, e);
+//   });
+
+// // 2--LOAD EVENT
+// //when all the external images and third party data has also been loaded along side html parsing and dom tree creation
+
+// window.addEventListener('load', function (e) {
+//   console.log('Page fully loaded', e);
+// });
+
+// //--3------ BEFOREUNLOAD EVENT------
+
+// // triggers right before use closes a tab or leaves
+
+// // window.addEventListener('beforeunload', function (e) {
+// //   e.preventDefault();
+// //   console.log(e);
+// //   //return value should be passed blank
+// //   e.returnValue = '';
+// // });
