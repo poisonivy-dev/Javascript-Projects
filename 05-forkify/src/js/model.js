@@ -1,9 +1,11 @@
-import { API_URL } from './config';
+import { API_URL, RES_PER_PAGE } from './config';
 import { getJSON } from './helpers';
 export const state = {
   recipe: {},
   search: {
     query: '',
+    page: 1,
+    resultsPerPage: RES_PER_PAGE,
     results: [],
   },
 };
@@ -30,7 +32,6 @@ export const loadRecipe = async function (id) {
 };
 
 // Requesting result of searched query
-
 export const loadSearchResults = async function (query) {
   state.search.query = query;
   //Making API call
@@ -43,4 +44,20 @@ export const loadSearchResults = async function (query) {
       image: rec.image_url,
     };
   });
+};
+
+// load results per page
+export const loadPageResults = function (page = state.search.page) {
+  state.search.page = page;
+  const start = (page - 1) * RES_PER_PAGE;
+  const end = page * RES_PER_PAGE;
+  return state.search.results.slice(start, end);
+};
+
+//update the servings
+export const updateServings = function (newServings) {
+  state.recipe.ingredients.forEach(ing => {
+    ing.quantity = (ing.quantity / state.recipe.servings) * newServings;
+  });
+  state.recipe.servings = newServings;
 };
