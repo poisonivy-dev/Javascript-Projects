@@ -14,9 +14,13 @@ const controlRecipes = async function () {
   try {
     //look for id in the hash
     const id = window.location.hash.slice(1);
-    //1) loading recipe
+
     if (!id) return;
+    //0) update sidebar
+    resultsView.update(model.loadPageResults());
+    //1) loading recipe
     recipeView.renderSpinner();
+
     await model.loadRecipe(id);
     //2) Rendering Recipe
     recipeView.render(model.state.recipe);
@@ -32,6 +36,7 @@ const controlSearchResults = async function () {
     const query = searchView.getQuery();
     if (!query) return;
     resultsView.renderSpinner();
+
     // 2) Load Results
     await model.loadSearchResults(query);
 
@@ -56,9 +61,15 @@ const controlServings = function (servings) {
   // recipeView.render(model.state.recipe);
   recipeView.update(model.state.recipe);
 };
+
+const controlBookmarks = function () {
+  model.addBookmark(model.state.recipe);
+  recipeView.update(model.state.recipe);
+};
 const init = function () {
   recipeView.addHandlerRender(controlRecipes);
   recipeView.addHandlerUpdateServings(controlServings);
+  recipeView.addHandlerAddBookmark(controlBookmarks);
   searchView.addHandlerRender(controlSearchResults);
   paginationView.addHandlerRender(controlPagination);
 };
