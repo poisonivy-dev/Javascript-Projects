@@ -6,7 +6,7 @@ import 'regenerator-runtime/runtime';
 import searchView from './Views/searchView.js';
 import resultsView from './Views/resultsView.js';
 import paginationView from './Views/paginationView.js';
-
+import bookmarksView from './Views/bookmarksView.js';
 // if (module.hot) {
 //   module.hot.accept();
 // }
@@ -18,6 +18,8 @@ const controlRecipes = async function () {
     if (!id) return;
     //0) update sidebar
     resultsView.update(model.loadPageResults());
+    //update the bookmark
+    bookmarksView.update(model.state.bookmarks);
     //1) loading recipe
     recipeView.renderSpinner();
 
@@ -63,9 +65,15 @@ const controlServings = function (servings) {
 };
 
 const controlBookmarks = function () {
+  //add bookmark to state
   if (!model.state.recipe.bookmarked) model.addBookmark(model.state.recipe);
   else model.removeBookmark(model.state.recipe.id);
+
+  //update recipe view
   recipeView.update(model.state.recipe);
+
+  //change the bookmark view
+  bookmarksView.render(model.state.bookmarks);
 };
 const init = function () {
   recipeView.addHandlerRender(controlRecipes);

@@ -1,12 +1,5 @@
 import View from './View.js';
-import PreviewView from './PreviewView.js';
-class ResultsView extends View {
-  _parentEl = document.querySelector('.results');
-  _errorMessage = 'No recipes found for your query. Please try another one!';
-  _message;
-  _generateMarkup() {
-    return this._data.map(this._generateMarkupPreview).join('');
-  }
+class PreviewView extends View {
   _generateMarkupPreview(rec) {
     const id = window.location.hash.slice(1);
     return `<li class="preview">
@@ -26,4 +19,4 @@ class ResultsView extends View {
   }
 }
 
-export default new ResultsView();
+export default new PreviewView();
