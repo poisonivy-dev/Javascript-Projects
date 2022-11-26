@@ -7,6 +7,7 @@ import searchView from './Views/searchView.js';
 import resultsView from './Views/resultsView.js';
 import paginationView from './Views/paginationView.js';
 import bookmarksView from './Views/bookmarksView.js';
+import addRecipeView from './Views/addRecipeView.js';
 // if (module.hot) {
 //   module.hot.accept();
 // }
@@ -75,7 +76,16 @@ const controlBookmarks = function () {
   //change the bookmark view
   bookmarksView.render(model.state.bookmarks);
 };
+const controlLoadBookmarks = function () {
+  bookmarksView.render(model.state.bookmarks);
+};
+
+const controlAddRecipe = function (data) {
+  console.log(data);
+};
 const init = function () {
+  addRecipeView.addHandlerUpload(controlAddRecipe);
+  bookmarksView.addHandlerRender(controlLoadBookmarks);
   recipeView.addHandlerRender(controlRecipes);
   recipeView.addHandlerUpdateServings(controlServings);
   recipeView.addHandlerAddBookmark(controlBookmarks);
@@ -83,3 +93,9 @@ const init = function () {
   paginationView.addHandlerRender(controlPagination);
 };
 init();
+
+const clearBookmarks = function () {
+  localStorage.clear('bookmarks');
+};
+
+// clearBookmarks();
