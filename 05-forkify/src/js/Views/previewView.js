@@ -1,17 +1,17 @@
 import View from './View.js';
 class PreviewView extends View {
-  _generateMarkupPreview(rec) {
+  _generateMarkup() {
     const id = window.location.hash.slice(1);
     return `<li class="preview">
     <a class="preview__link ${
-      rec.id === id ? 'preview__link--active' : ''
-    }" href="#${rec.id}">
+      this._data.id === id ? 'preview__link--active' : ''
+    }" href="#${this._data.id}">
       <figure class="preview__fig">
-        <img src="${rec.image}" alt="${rec.title}" />
+        <img src="${this._data.image}" alt="${this._data.title}" />
       </figure>
       <div class="preview__data">
-        <h4 class="preview__title">${rec.title}</h4>
-        <p class="preview__publisher">${rec.publisher}</p>
+        <h4 class="preview__title">${this._data.title}</h4>
+        <p class="preview__publisher">${this._data.publisher}</p>
  
       </div>
     </a>
