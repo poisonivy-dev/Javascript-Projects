@@ -63,7 +63,7 @@ export default class View {
     this._parentEl.insertAdjacentHTML('afterbegin', markup);
   }
   renderMessage(message = this._message) {
-    const markup = `div class="error">
+    const markup = `<div class="error">
         <div>
           <svg>
             <use href="${icons}#icon-smile"></use>

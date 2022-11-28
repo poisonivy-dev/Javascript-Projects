@@ -1,6 +1,7 @@
 import View from './View.js';
 class AddRecipeView extends View {
   _parentEl = document.querySelector('.upload');
+  _message = 'Recipe has successfully been uploaded 🙂';
   _window = document.querySelector('.add-recipe-window');
   _btnOpen = document.querySelector('.nav__btn--add-recipe');
   _btnClose = document.querySelector('.btn--close-modal');
@@ -11,13 +12,13 @@ class AddRecipeView extends View {
     this._addHandlerHideWindow();
   }
   _addHandlerShowWindow() {
-    this._btnOpen.addEventListener('click', this._toggleWindow.bind(this));
+    this._btnOpen.addEventListener('click', this.toggleWindow.bind(this));
   }
   _addHandlerHideWindow() {
-    this._btnClose.addEventListener('click', this._toggleWindow.bind(this));
-    this._overlay.addEventListener('click', this._toggleWindow.bind(this));
+    this._btnClose.addEventListener('click', this.toggleWindow.bind(this));
+    this._overlay.addEventListener('click', this.toggleWindow.bind(this));
   }
-  _toggleWindow() {
+  toggleWindow() {
     this._window.classList.toggle('hidden');
     this._overlay.classList.toggle('hidden');
   }
