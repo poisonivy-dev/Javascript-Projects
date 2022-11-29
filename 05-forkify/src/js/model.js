@@ -112,7 +112,6 @@ export const uploadRecipe = async function (newRecipe) {
         const [quantity, unit, description] = ingArr;
         return { quantity: quantity ? +quantity : null, unit, description };
       });
-    console.log(ingredients);
 
     const recipe = {
       title: newRecipe.title,
@@ -126,7 +125,7 @@ export const uploadRecipe = async function (newRecipe) {
     };
     //upload to the database through API
     const data = await AJAX(`${API_URL}?key=${KEY}`, recipe);
-    console.log(data);
+
     //add recipe to state
     state.recipe = createRecipeObject(data);
 
