@@ -4,7 +4,6 @@ import icons from 'url:../../img/icons.svg'; //parcel 2 : for
 class PreviewView extends View {
   _generateMarkup() {
     const id = window.location.hash.slice(1);
-    console.log(this._data.key);
     return `<li class="preview">
     <a class="preview__link ${
       this._data.id === id ? 'preview__link--active' : ''
