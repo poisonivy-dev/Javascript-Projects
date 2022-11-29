@@ -1,6 +1,13 @@
 import icons from 'url:../../img/icons.svg'; //parcel 2 : for
 export default class View {
   _data;
+  /**
+   *
+   * @param {Object | Object[]} data the data to be rendered
+   * @param {boolean} [render] if false , return markup instead of rendering
+   * @returns {undefined |string} string in case render is false
+  
+   */
   render(data, render = true) {
     if (!data || (Array.isArray(data) && data.length === 0))
       return this.renderError();
