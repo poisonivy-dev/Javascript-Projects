@@ -1,5 +1,5 @@
 import View from './View.js';
-import PreviewView from './PreviewView.js';
+import PreviewView from './previewView.js';
 class ResultsView extends View {
   _parentEl = document.querySelector('.results');
   _errorMessage = 'No recipes found for your query. Please try another one!';
